@@ -51,12 +51,12 @@ Notes on Lambda Architecture
 
 * In pseudo code:
 
-    ```function batch_layer():
-
-            while (True):
-                ingest_data()
-                compute_batch_view()
-                append_to_master_dataset()
+    ```
+    function batch_layer():
+        while (True):
+            ingest_data()
+            compute_batch_view()
+            append_to_master_dataset()
 
     ```
 
@@ -76,9 +76,9 @@ Notes on Lambda Architecture
 
 * In pseudo code:
 
-    ```function serve_layer():
-            
-            query_batch_view()
+    ```
+    function serve_layer():
+        query_batch_view()
     ```
 
 * When new batches are available, Serving Layer indexes them as well.
@@ -92,7 +92,7 @@ Notes on Lambda Architecture
 
 ### Things so far
 
-* We have a two layer architecture - with Batch and Serving layer.
+* We have a two-layer architecture - with Batch and Serving layer.
 
 * We can bake in fault tolerance into both the layers.
 
@@ -100,13 +100,13 @@ Notes on Lambda Architecture
 
 * Since Batch Layer can compute arbitrary functions over arbitrary datasets, the architecture is quite general and extensible.
 
-* Futher, we can use any combination of technology for the two layers.
+* Further, we can use any combination of technology for the two layers.
 
 * This simple architecture is able to solve a lot of big data use cases.
 
 * The architecture so far is not complete.
 
-* Batch Layer can take significant amount of time to process a batch of data which makes it a high latency layer.
+* Batch Layer can take a significant amount of time to process a batch of data which makes it a high latency layer.
 
 * While some data is being processed, the new incoming data is queued and is picked as part of the next batch. This means there is always some backlog of data which is not yet consumed.
 
@@ -114,7 +114,7 @@ Notes on Lambda Architecture
 
 * Now when we query the Serving Layer, the results do not account for the data which is yet to be processed and this could be a problem depending on the use cases.
 
-* Basically it is a problem for all the streaming/realtime use cases.
+* Basically it is a problem for all the streaming/real-time use cases.
 
 * So the next problem we have to solve is how to make the backlog data available for query.
 
@@ -124,21 +124,21 @@ Notes on Lambda Architecture
 
 * Speed Layer is similar to Batch Layer in terms of how it processes the incoming data but there are some key differences:
 
-    * Speed Layer operates only on the most recent, un-batched data while the Batch Layer operates on the entire data. Further, Speed Layers works incremently over the data. So if a new record is added to the un-batched data, Speed Layer just processes the newly added record.
+    * Speed Layer operates only on the most recent, un-batched data while the Batch Layer operates on the entire data. Further, Speed Layers works incrementally over the data. So if a new record is added to the un-batched data, Speed Layer just processes the newly added record.
 
-    * Batch Layer can support more complex operations than Speed Layer. This is partially because Speedk Layer should be low latency and partially becuase Speed Layer does not have access to entire data. So operations that require past data (eg get me all the those current users who visited my site atleast once in last one month) can not be trivially supported by Speed Layer.
+    * Batch Layer can support more complex operations than Speed Layer. This is partially because Speed Layer should be low latency and partially because Speed Layer does not have access to entire data. So operations that require past data (eg get me all those current users who visited my site at least once in last one month) cannot be trivially supported by Speed Layer.
 
     * Batch Layer has a high latency while Speed Layer has a low latency.
 
     * Speed Layer is a stream processing system while Batch Layer is a, surprise surpise, batch processing system.
 
-* Spark Streaming and Storm are examples of real time processing systems.
+* Spark Streaming and Storm are examples of real-time processing systems.
 
-*     ```function spped_layer():
-
-            while (True):
-                ingest_data()
-                compute_speed_view()
+*   ```
+    function spped_layer():
+        while (True):
+            ingest_data()
+            compute_speed_view()
 
     ```
 
